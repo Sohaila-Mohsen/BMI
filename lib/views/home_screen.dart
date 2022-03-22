@@ -1,3 +1,4 @@
+import 'package:bmi/blocs/unit/cubit/cubit/unit_cubit.dart';
 import 'package:bmi/blocs/value/cubit/value_cubit.dart';
 import 'package:bmi/components/dropdown_list.dart';
 import 'package:bmi/components/gender_determiner.dart';
@@ -7,48 +8,61 @@ import '../components/Bim_text.dart';
 import '../components/value_determiner.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../model/ResultSimplePrefrences.dart';
+
+// ignore: must_be_immutable
 class HomeScreen extends StatelessWidget {
-  var ageCubit = ValueCubit();
-  var weightCubit = ValueCubit();
-  var heightCubit = ValueCubit();
-  var genderCubit = ValueCubit();
+  var valueCubit = ValueCubit();
+  var weightUnitCubit = UnitCubit();
+  var heightUnitCubit = UnitCubit();
   final weightUnits = ['Kg', 'G', 'Mg'];
   final heightUnits = ['Cm', 'M', 'Km', 'Ft'];
+
+  HomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
-          color: Color.fromARGB(255, 6, 24, 39),
+          color: const Color.fromARGB(255, 6, 24, 39),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 10),
-              Container(
-                padding: EdgeInsets.all(20),
+              const SizedBox(height: 10),
+              Container( 
+                padding: const EdgeInsets.all(20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // ignore: prefer_const_literals_to_create_immutables
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.menu,
                       color: Colors.white,
                     ),
-                    Icon(
+                    const Icon(
                       Icons.notifications_outlined,
                       color: Colors.white,
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 15),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.4),
+                  borderRadius: const BorderRadius.all(Radius.circular(15)),
+                ),
+                clipBehavior: Clip.antiAliasWithSaveLayer,
+                child: Text(ResultSimplePrefrences.getBMIResult() != null? 'Your Last BMI is ${ResultSimplePrefrences.getBMIResult()}':'Hello!'),
+              ),
+              const SizedBox(height: 15),
               BimText('BMI Calculator', 23, FontWeight.w900),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               BimText('Gender', 12, FontWeight.normal),
               BlocConsumer<ValueCubit, ValueState>(
                 listener: (context, state) {},
                 builder: (context, state) {
-                  return GenderDetrminer(genderCubit);
+                  return GenderDetrminer(valueCubit);
                 },
               ),
               BimText('Weight', 10, FontWeight.normal),
@@ -59,14 +73,14 @@ class HomeScreen extends StatelessWidget {
                       child: BlocConsumer<ValueCubit, ValueState>(
                         listener: (context, state) {},
                         builder: (context, state) {
-                          weightCubit = ValueCubit.get(context);
-                          return ValueDetrminer(weightCubit);
+                          valueCubit = ValueCubit.get(context);
+                          return ValueDetrminer(valueCubit, 'Weight');
                         },
                       )),
-                  Expanded(child: DropdownList(weightUnits)),
+                  Expanded(child: DropdownList(weightUnits, weightUnitCubit)),
                 ],
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               BimText('Height', 10, FontWeight.normal),
               Row(
                 children: [
@@ -75,46 +89,45 @@ class HomeScreen extends StatelessWidget {
                       child: BlocConsumer<ValueCubit, ValueState>(
                         listener: (context, state) {},
                         builder: (context, state) {
-                          heightCubit = ValueCubit.get(context);
-                          return ValueDetrminer(heightCubit);
+                          valueCubit = ValueCubit.get(context);
+                          return ValueDetrminer(valueCubit, 'Height');
                         },
                       )),
-                  Expanded(child: DropdownList(heightUnits)),
+                  Expanded(child: DropdownList(heightUnits, heightUnitCubit)),
                 ],
               ),
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
               BimText('Age', 10, FontWeight.normal),
               BlocConsumer<ValueCubit, ValueState>(
                 listener: (context, state) {},
                 builder: (context, state) {
-                  ageCubit = ValueCubit.get(context);
-                  return ValueDetrminer(ageCubit);
+                  valueCubit = ValueCubit.get(context);
+                  return ValueDetrminer(valueCubit, 'Age');
                 },
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               Container(
                 width: double.infinity,
-                margin: EdgeInsets.all(20),
+                margin: const EdgeInsets.all(20),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: Color.fromARGB(255, 172, 91, 175),
+                    primary: const Color.fromARGB(255, 172, 91, 175),
                   ),
                   onPressed: () {
-                    print('height = ${heightCubit.value}');
-                    print('weight = ${weightCubit.value}');
-                    print('age = ${ageCubit.value}');
+                    convertHeightToMeter();
+                    convertWeightToKg();
+                    print('height = ${valueCubit.height}');
+                    print('weight = ${valueCubit.weight}');
+                    print('age = ${valueCubit.age}');
                     print(
-                        'genger = ${(genderCubit.value) == 1 ? "female" : "male"}');
-
+                        'genger = ${(valueCubit.selected) == 1 ? "female" : "male"}');
+                    print('w unit = ${weightUnitCubit.unit}');
+                    print('w unit = ${heightUnitCubit.unit}');
                     Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ResultScreen(
-                                heightCubit.getVlue(),
-                                weightCubit.getVlue(),
-                                ageCubit.getVlue(),
-                                genderCubit.getVlue())),
-                        (route) => false);
+                            builder: (context) => ResultScreen(valueCubit)),
+                        (Route<dynamic> route) => false);
                   },
                   child: BimText('Calculate', 15, FontWeight.w300),
                 ),
@@ -124,5 +137,25 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void convertHeightToMeter() {
+    String? unit = heightUnitCubit.unit;
+    if (unit == 'Cm') {
+      valueCubit.multiplayHeightBy(0.01);
+    } else if (unit == 'KM') {
+      valueCubit.multiplayHeightBy(1000);
+    } else if (unit == 'Ft') {
+      valueCubit.multiplayHeightBy(0.3048);
+    }
+  }
+
+  void convertWeightToKg() {
+    String? unit = weightUnitCubit.unit;
+    if (unit == 'g') {
+      valueCubit.weight *= 1000;
+    } else if (unit == 'Mg') {
+      valueCubit.weight *= 0.001;
+    }
   }
 }

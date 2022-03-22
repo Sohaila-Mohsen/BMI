@@ -29,8 +29,8 @@ class GenderDetrminer extends StatelessWidget {
               ),
               onPressed: () {
                 valueCubit.setToOne();
-                selected = valueCubit.value;
-                print('selected index = ${valueCubit.value}');
+                selected = valueCubit.selected.toInt();
+                print('selected index = ${valueCubit.selected}');
               },
             ),
           ),
@@ -39,10 +39,10 @@ class GenderDetrminer extends StatelessWidget {
             left: 110,
             child: Radio<int>(
               value: 1,
-              groupValue: selected,
+              groupValue: valueCubit.selected,
               onChanged: (value) {
                 valueCubit.setToOne();
-                selected = valueCubit.value;
+                selected = valueCubit.selected.toInt();
               },
             ),
           ),
@@ -64,7 +64,7 @@ class GenderDetrminer extends StatelessWidget {
               ),
               onPressed: () {
                 valueCubit.setToTwo();
-                selected = valueCubit.value;
+                selected = valueCubit.selected.toInt();
                 print('selected index = ${selected}');
               },
             ),
@@ -74,10 +74,10 @@ class GenderDetrminer extends StatelessWidget {
             left: 110,
             child: Radio<int>(
               value: 2,
-              groupValue: selected,
+              groupValue: valueCubit.selected,
               onChanged: (value) {
                 valueCubit.setToTwo();
-                selected = valueCubit.value;
+                selected = valueCubit.selected.toInt();
               },
             ),
           ),

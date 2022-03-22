@@ -1,3 +1,4 @@
+import 'package:bmi/blocs/unit/cubit/cubit/unit_cubit.dart';
 import 'package:bmi/blocs/value/cubit/value_cubit.dart';
 import 'package:bmi/views/home_screen.dart';
 import 'package:bmi/views/result_screen.dart';
@@ -12,6 +13,9 @@ class AppRoot extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (context) => ValueCubit(),
+        ),
+        BlocProvider(
+          create: (context) => UnitCubit(),
         ),
       ],
       child: MaterialApp(

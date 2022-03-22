@@ -1,20 +1,22 @@
-// ignore_for_file: unnecessary_new
+// ignore_for_file: unnecessary_new, must_be_immutable
 
 import 'dart:math';
 
+import 'package:bmi/blocs/value/cubit/value_cubit.dart';
 import 'package:bmi/views/home_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 import '../components/Bim_text.dart';
 import '../components/chart.dart';
+import '../model/ResultSimplePrefrences.dart';
 
 class ResultScreen extends StatelessWidget {
-  int? height, weight, age, gender; //1==> female , 2==>male
+  ValueCubit? valueCubit; //1==> female , 2==>male
   double? result;
   String? range, catigory;
 
-  ResultScreen(this.height, this.weight, this.age, this.gender) {
+  ResultScreen(this.valueCubit, {Key? key}) : super(key: key)  {
     doCBMICalculations();
+    ResultSimplePrefrences.setBmiResult(result);
   }
 
   @override
@@ -22,12 +24,12 @@ class ResultScreen extends StatelessWidget {
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
-          color: Color.fromARGB(255, 6, 24, 39),
-          padding: EdgeInsets.all(10),
+          color: const Color.fromARGB(255, 6, 24, 39),
+          padding: const EdgeInsets.all(10),
           child: Column(
             children: [
               Container(
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -45,12 +47,12 @@ class ResultScreen extends StatelessWidget {
                 ),
               ),
               BimText('Result', 30, FontWeight.w900),
-              ChartComponent(),
+              ChartComponent(result),
               Text('For Your Height, a normal weight range would be $range '),
               BimText('For Your Height, a normal weight range would be $range ',
                   13, FontWeight.bold),
               BimText(
-                  'Your Bmi is $result, indicating your weight is in the $catigory',
+                  'Your Bmi is ${result!.toStringAsFixed(1)}, indicating your weight is in the $catigory',
                   13,
                   FontWeight.normal),
               BimText(
@@ -59,16 +61,20 @@ class ResultScreen extends StatelessWidget {
                   FontWeight.normal),
               Container(
                 width: double.infinity,
-                margin: EdgeInsets.all(20),
+                margin: const EdgeInsets.all(20),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: Color.fromARGB(255, 172, 91, 175),
+                    primary: const Color.fromARGB(255, 172, 91, 175),
                   ),
                   onPressed: () {
+                    valueCubit!.weight = 0;
+                    valueCubit!.height = 0;
+                    valueCubit!.age = 0;
+                    valueCubit!.selected = 0;
                     Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(builder: (context) => HomeScreen()),
-                        (route) => false);
+                        (Route<dynamic> route) => false);
                   },
                   child: BimText('Realculate BMI', 15, FontWeight.w300),
                 ),
@@ -82,23 +88,26 @@ class ResultScreen extends StatelessWidget {
 
   void doCBMICalculations() {
     //calculate bmi
-    result = weight! / pow(height!, 2);
+    result = valueCubit!.weight / pow(valueCubit!.height, 2);
 
     //calculate range and category
     if (result! < 18.5) {
-      range = 'less than or equal${pow(height!, 2) * 18.5}';
+      range =
+          'less than or equal${(pow(valueCubit!.height, 2) * 18.5).toStringAsFixed(1)}';
       catigory = 'underweight';
     } else if (result! >= 18.5 && result! < 24.9) {
       range =
-          'from ${pow(height!, 2) * 18.5} and range = ${pow(height!, 2) * 24.9}';
+          'from ${(pow(valueCubit!.height, 2) * 18.5).toStringAsFixed(1)} and  ${(pow(valueCubit!.height, 2) * 24.9).toStringAsFixed(1)}';
       catigory = 'normal';
     } else if (result! >= 24.9 && result! < 29.9) {
       range =
-          'from ${pow(height!, 2) * 24.9} and range = ${pow(height!, 2) * 29.9}';
+          'from ${(pow(valueCubit!.height, 2) * 24.9).toStringAsFixed(1)} and  ${(pow(valueCubit!.height, 2) * 29.9).toStringAsFixed(1)}';
       catigory = 'overweight';
     } else {
-      range = 'more than or equal ${pow(height!, 2) * 30}';
+      range =
+          'more than or equal ${(pow(valueCubit!.height, 2) * 30).toStringAsFixed(1)}';
       catigory = 'obese';
     }
   }
 }
+

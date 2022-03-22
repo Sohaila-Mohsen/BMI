@@ -51,6 +51,7 @@ dev_dependencies:
   equatable: ^2.0.3
   charts_flutter: ^0.12.0
   fl_chart: ^0.46.0
+  shared_preferences: ^2.0.13
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

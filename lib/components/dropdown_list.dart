@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class DropdownList extends StatefulWidget {
+class DropdownList extends StatelessWidget {
   final List<String> units;
 
-  DropdownList(this.units ){value=units[0];}
+  DropdownList(this.units, this.unitCubit) {
+    unitCubit.unit = units[0];
+  }
 
-  String? value ;
+  var unitCubit;
 
-  @override
-  State<DropdownList> createState() => _DropdownListState();
-}
-
-class _DropdownListState extends State<DropdownList> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -27,11 +24,11 @@ class _DropdownListState extends State<DropdownList> {
       child: DropdownButton<String>(
         icon: Icon(Icons.keyboard_arrow_down_sharp),
         isExpanded: true,
-        value: widget.value,
-        items: widget.units.map(buildMenueItem).toList(),
-        onChanged: (value) => setState(() {
-          widget.value = value;
-        }),
+        value: unitCubit.unit,
+        items: units.map(buildMenueItem).toList(),
+        onChanged: (value) {
+          unitCubit.setUnit(value);
+        },
       ),
     );
   }
